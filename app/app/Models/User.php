@@ -2,29 +2,44 @@
 
 namespace App\Models;
 
+use Filament\Models\Contracts\FilamentUser;
+use Filament\Panel;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
-use Illuminate\Database\Eloquent\Model;
+use Illuminate\Foundation\Auth\User as Authenticatable;
+use Illuminate\Notifications\Notifiable;
 
-class User extends Model
+class User extends Authenticatable implements FilamentUser
 {
-    use HasFactory;
+    use HasFactory, Notifiable;
 
-    /**
-     * The attributes that are mass assignable.
-     *
-     * @var array
-     */
-    protected $fillable = [];
+    protected $fillable = [
+        'name',
+        'email',
+        'password',
+        'role',
+        'bio',
+        'avatar',
+        'social_twitter',
+        'social_linkedin',
+    ];
 
-    /**
-     * Get the attributes that should be cast.
-     *
-     * @return array<string, string>
-     */
+    protected $hidden = [
+        'password',
+        'remember_token',
+    ];
+
     protected function casts(): array
     {
         return [
-            'id' => 'integer',
+            'email_verified_at' => 'datetime',
+            'password' => 'hashed', // Fitur Laravel 11+ untuk auto-hash
         ];
+    }
+
+    // Wajib untuk Filament 5: Tentukan siapa yang boleh akses admin panel
+    public function canAccessPanel(Panel $panel): bool
+    {
+        // Hanya role 'admin' dan 'editor' yang bisa masuk ke panel Filament
+        return in_array($this->role, ['admin', 'editor']);
     }
 }

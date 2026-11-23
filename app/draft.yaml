@@ -12,10 +12,19 @@ models:
       hasMany: News
 
   User:
-    # User bawaan Laravel, kita tambah kolom author via migration terpisah
-    # (Blueprint tidak override model User bawaan, jadi kita pakai migration manual)
-    # Kolom tambahan: role, bio, avatar, social media
+    name: string:255
+    email: string:255 unique
+    password: string:255
+    email_verified_at: timestamp nullable
+    remember_token: string:100 nullable
+    role: string:50 default:'author'
+    bio: text nullable
+    avatar: string:255 nullable
+    social_twitter: string:255 nullable
+    social_linkedin: string:255 nullable
     timestamps: true
+    relationships:
+      hasMany: News:author, Comment, PollVote
 
   News:
     title: string:255

@@ -11,19 +11,19 @@ created:
     - database/factories/LiveReportFactory.php
     - database/factories/AdSlotFactory.php
     - database/factories/SiteSettingFactory.php
-    - database/migrations/2026_11_23_001220_create_categories_table.php
-    - database/migrations/2026_11_23_001221_create_users_table.php
-    - database/migrations/2026_11_23_001222_create_news_table.php
-    - database/migrations/2026_11_23_001223_create_tags_table.php
-    - database/migrations/2026_11_23_001224_create_comments_table.php
-    - database/migrations/2026_11_23_001225_create_polls_table.php
-    - database/migrations/2026_11_23_001226_create_poll_options_table.php
-    - database/migrations/2026_11_23_001227_create_poll_votes_table.php
-    - database/migrations/2026_11_23_001228_create_newsletter_subscribers_table.php
-    - database/migrations/2026_11_23_001229_create_live_reports_table.php
-    - database/migrations/2026_11_23_001230_create_ad_slots_table.php
-    - database/migrations/2026_11_23_001231_create_site_settings_table.php
-    - database/migrations/2026_11_23_001232_create_news_tag_table.php
+    - database/migrations/2026_11_23_003332_create_categories_table.php
+    - database/migrations/2026_11_23_003333_create_users_table.php
+    - database/migrations/2026_11_23_003334_create_news_table.php
+    - database/migrations/2026_11_23_003335_create_tags_table.php
+    - database/migrations/2026_11_23_003336_create_comments_table.php
+    - database/migrations/2026_11_23_003337_create_polls_table.php
+    - database/migrations/2026_11_23_003338_create_poll_options_table.php
+    - database/migrations/2026_11_23_003339_create_poll_votes_table.php
+    - database/migrations/2026_11_23_003340_create_newsletter_subscribers_table.php
+    - database/migrations/2026_11_23_003341_create_live_reports_table.php
+    - database/migrations/2026_11_23_003342_create_ad_slots_table.php
+    - database/migrations/2026_11_23_003343_create_site_settings_table.php
+    - database/migrations/2026_11_23_003344_create_news_tag_table.php
     - app/Models/Category.php
     - app/Models/User.php
     - app/Models/News.php
@@ -37,7 +37,7 @@ created:
     - app/Models/AdSlot.php
     - app/Models/SiteSetting.php
 models:
-    User: { timestamps: timestamps }
+    User: { name: 'string:255', email: 'string:255 unique', password: 'string:255', email_verified_at: 'timestamp nullable', remember_token: 'string:100 nullable', role: "string:50 default:'author'", bio: 'text nullable', avatar: 'string:255 nullable', social_twitter: 'string:255 nullable', social_linkedin: 'string:255 nullable', timestamps: timestamps, relationships: { hasMany: 'News:author, Comment, PollVote' } }
     Category: { name: 'string:100', slug: 'string:100 unique index', description: 'text nullable', icon: 'string:50 nullable', color: 'string:20 nullable', sort_order: 'integer default:0', is_active: 'boolean default:true', timestamps: timestamps, relationships: { hasMany: News } }
     News: { title: 'string:255', slug: 'string:255 unique index', excerpt: 'text nullable', content: longtext, image: 'string:255 nullable', category_id: 'id foreign:categories', author_id: 'id foreign:users', is_featured: 'boolean default:false', is_published: 'boolean default:false', published_at: 'timestamp nullable', view_count: 'unsignedInteger default:0', likes_count: 'unsignedInteger default:0', dislikes_count: 'unsignedInteger default:0', meta_title: 'string:255 nullable', meta_description: 'text nullable', reading_time: 'unsignedInteger default:5', timestamps: timestamps, softdeletes: softDeletes, relationships: { belongsTo: 'Category, User:author', belongsToMany: Tag, hasMany: Comment, hasOne: LiveReport } }
     Tag: { name: 'string:100', slug: 'string:100 unique index', color: 'string:20 nullable', timestamps: timestamps, relationships: { belongsToMany: News } }

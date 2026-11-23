@@ -1,5 +1,153 @@
 models:
-  # ...
+  Category:
+    name: string:100
+    slug: string:100 unique index
+    description: text nullable
+    icon: string:50 nullable
+    color: string:20 nullable
+    sort_order: integer default:0
+    is_active: boolean default:true
+    timestamps: true
+    relationships:
+      hasMany: News
 
-controllers:
-  # ...
+  User:
+    # User bawaan Laravel, kita tambah kolom author via migration terpisah
+    # (Blueprint tidak override model User bawaan, jadi kita pakai migration manual)
+    # Kolom tambahan: role, bio, avatar, social media
+    timestamps: true
+
+  News:
+    title: string:255
+    slug: string:255 unique index
+    excerpt: text nullable
+    content: longtext
+    image: string:255 nullable
+    category_id: id foreign:categories
+    author_id: id foreign:users
+    is_featured: boolean default:false
+    is_published: boolean default:false
+    published_at: timestamp nullable
+    view_count: unsignedInteger default:0
+    likes_count: unsignedInteger default:0
+    dislikes_count: unsignedInteger default:0
+    meta_title: string:255 nullable
+    meta_description: text nullable
+    reading_time: unsignedInteger default:5
+    timestamps: true
+    softDeletes: true
+    relationships:
+      belongsTo: Category, User:author
+      belongsToMany: Tag
+      hasMany: Comment
+      hasOne: LiveReport # (opsional, bisa juga tanpa relasi)
+
+  Tag:
+    name: string:100
+    slug: string:100 unique index
+    color: string:20 nullable
+    timestamps: true
+    relationships:
+      belongsToMany: News
+
+  Comment:
+    news_id: id foreign:news
+    user_id: id foreign:users nullable
+    author_name: string:100 nullable
+    author_email: string:100 nullable
+    content: text
+    status: string:20 default:'pending' # pending, approved, rejected
+    likes_count: unsignedInteger default:0
+    dislikes_count: unsignedInteger default:0
+    parent_id: id nullable # untuk reply
+    timestamps: true
+    softDeletes: true
+    relationships:
+      belongsTo: News, User
+      hasMany: Comment # replies
+
+  Poll:
+    question: string:255
+    description: text nullable
+    is_active: boolean default:true
+    allow_multiple: boolean default:false
+    total_votes: unsignedInteger default:0
+    starts_at: timestamp nullable
+    ends_at: timestamp nullable
+    timestamps: true
+    relationships:
+      hasMany: PollOption, PollVote
+
+  PollOption:
+    poll_id: id foreign:polls
+    label: string:255
+    vote_count: unsignedInteger default:0
+    sort_order: integer default:0
+    timestamps: true
+    relationships:
+      belongsTo: Poll
+      hasMany: PollVote
+
+  PollVote:
+    poll_id: id foreign:polls
+    poll_option_id: id foreign:poll_options
+    user_id: id foreign:users nullable
+    ip_address: string:45 nullable
+    user_agent: text nullable
+    timestamps: true
+    relationships:
+      belongsTo: Poll, PollOption, User
+
+  NewsletterSubscriber:
+    email: string:100 unique index
+    name: string:100 nullable
+    is_active: boolean default:true
+    subscribed_at: timestamp
+    timestamps: true
+
+  LiveReport:
+    title: string:255
+    content: text nullable
+    timestamp: datetime
+    news_id: id foreign:news nullable
+    is_published: boolean default:true
+    sort_order: integer default:0
+    timestamps: true
+    relationships:
+      belongsTo: News
+
+  AdSlot:
+    name: string:100
+    code: string:50 unique index
+    position: string:50 nullable # header, sidebar, in-article, footer
+    html_content: longtext nullable
+    image_url: string:255 nullable
+    link_url: string:255 nullable
+    width: string:20 nullable # 300x250, 728x90, dll
+    height: string:20 nullable
+    is_active: boolean default:true
+    starts_at: timestamp nullable
+    ends_at: timestamp nullable
+    impressions: unsignedInteger default:0
+    clicks: unsignedInteger default:0
+    timestamps: true
+
+  SiteSetting:
+    # Single-row table (id selalu = 1)
+    site_name: string:100 default:'BeritaKita'
+    site_tagline: string:255 nullable
+    ticker_text: text nullable # breaking news berjalan
+    ticker_enabled: boolean default:true
+    location_text: string:100 default:'Jakarta, Indonesia'
+    footer_about: text nullable
+    footer_address: string:255 nullable
+    footer_phone: string:50 nullable
+    footer_email: string:100 nullable
+    social_facebook: string:255 nullable
+    social_twitter: string:255 nullable
+    social_instagram: string:255 nullable
+    social_youtube: string:255 nullable
+    meta_title: string:255 nullable
+    meta_description: text nullable
+    google_analytics: string:50 nullable
+    timestamps: true

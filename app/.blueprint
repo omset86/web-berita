@@ -1,2 +1,51 @@
+created:
+    - database/factories/CategoryFactory.php
+    - database/factories/UserFactory.php
+    - database/factories/NewsFactory.php
+    - database/factories/TagFactory.php
+    - database/factories/CommentFactory.php
+    - database/factories/PollFactory.php
+    - database/factories/PollOptionFactory.php
+    - database/factories/PollVoteFactory.php
+    - database/factories/NewsletterSubscriberFactory.php
+    - database/factories/LiveReportFactory.php
+    - database/factories/AdSlotFactory.php
+    - database/factories/SiteSettingFactory.php
+    - database/migrations/2026_11_23_001220_create_categories_table.php
+    - database/migrations/2026_11_23_001221_create_users_table.php
+    - database/migrations/2026_11_23_001222_create_news_table.php
+    - database/migrations/2026_11_23_001223_create_tags_table.php
+    - database/migrations/2026_11_23_001224_create_comments_table.php
+    - database/migrations/2026_11_23_001225_create_polls_table.php
+    - database/migrations/2026_11_23_001226_create_poll_options_table.php
+    - database/migrations/2026_11_23_001227_create_poll_votes_table.php
+    - database/migrations/2026_11_23_001228_create_newsletter_subscribers_table.php
+    - database/migrations/2026_11_23_001229_create_live_reports_table.php
+    - database/migrations/2026_11_23_001230_create_ad_slots_table.php
+    - database/migrations/2026_11_23_001231_create_site_settings_table.php
+    - database/migrations/2026_11_23_001232_create_news_tag_table.php
+    - app/Models/Category.php
+    - app/Models/User.php
+    - app/Models/News.php
+    - app/Models/Tag.php
+    - app/Models/Comment.php
+    - app/Models/Poll.php
+    - app/Models/PollOption.php
+    - app/Models/PollVote.php
+    - app/Models/NewsletterSubscriber.php
+    - app/Models/LiveReport.php
+    - app/Models/AdSlot.php
+    - app/Models/SiteSetting.php
 models:
-    User: { name: string, email: string, email_verified_at: 'datetime nullable', password: string, remember_token: 'string nullable' }
+    User: { timestamps: timestamps }
+    Category: { name: 'string:100', slug: 'string:100 unique index', description: 'text nullable', icon: 'string:50 nullable', color: 'string:20 nullable', sort_order: 'integer default:0', is_active: 'boolean default:true', timestamps: timestamps, relationships: { hasMany: News } }
+    News: { title: 'string:255', slug: 'string:255 unique index', excerpt: 'text nullable', content: longtext, image: 'string:255 nullable', category_id: 'id foreign:categories', author_id: 'id foreign:users', is_featured: 'boolean default:false', is_published: 'boolean default:false', published_at: 'timestamp nullable', view_count: 'unsignedInteger default:0', likes_count: 'unsignedInteger default:0', dislikes_count: 'unsignedInteger default:0', meta_title: 'string:255 nullable', meta_description: 'text nullable', reading_time: 'unsignedInteger default:5', timestamps: timestamps, softdeletes: softDeletes, relationships: { belongsTo: 'Category, User:author', belongsToMany: Tag, hasMany: Comment, hasOne: LiveReport } }
+    Tag: { name: 'string:100', slug: 'string:100 unique index', color: 'string:20 nullable', timestamps: timestamps, relationships: { belongsToMany: News } }
+    Comment: { news_id: 'id foreign:news', user_id: 'id foreign:users nullable', author_name: 'string:100 nullable', author_email: 'string:100 nullable', content: text, status: "string:20 default:'pending'", likes_count: 'unsignedInteger default:0', dislikes_count: 'unsignedInteger default:0', parent_id: 'id nullable', timestamps: timestamps, softdeletes: softDeletes, relationships: { belongsTo: 'News, User', hasMany: Comment } }
+    Poll: { question: 'string:255', description: 'text nullable', is_active: 'boolean default:true', allow_multiple: 'boolean default:false', total_votes: 'unsignedInteger default:0', starts_at: 'timestamp nullable', ends_at: 'timestamp nullable', timestamps: timestamps, relationships: { hasMany: 'PollOption, PollVote' } }
+    PollOption: { poll_id: 'id foreign:polls', label: 'string:255', vote_count: 'unsignedInteger default:0', sort_order: 'integer default:0', timestamps: timestamps, relationships: { belongsTo: Poll, hasMany: PollVote } }
+    PollVote: { poll_id: 'id foreign:polls', poll_option_id: 'id foreign:poll_options', user_id: 'id foreign:users nullable', ip_address: 'string:45 nullable', user_agent: 'text nullable', timestamps: timestamps, relationships: { belongsTo: 'Poll, PollOption, User' } }
+    NewsletterSubscriber: { email: 'string:100 unique index', name: 'string:100 nullable', is_active: 'boolean default:true', subscribed_at: timestamp, timestamps: timestamps }
+    LiveReport: { title: 'string:255', content: 'text nullable', timestamp: datetime, news_id: 'id foreign:news nullable', is_published: 'boolean default:true', sort_order: 'integer default:0', timestamps: timestamps, relationships: { belongsTo: News } }
+    AdSlot: { name: 'string:100', code: 'string:50 unique index', position: 'string:50 nullable', html_content: 'longtext nullable', image_url: 'string:255 nullable', link_url: 'string:255 nullable', width: 'string:20 nullable', height: 'string:20 nullable', is_active: 'boolean default:true', starts_at: 'timestamp nullable', ends_at: 'timestamp nullable', impressions: 'unsignedInteger default:0', clicks: 'unsignedInteger default:0', timestamps: timestamps }
+    SiteSetting: { site_name: "string:100 default:'BeritaKita'", site_tagline: 'string:255 nullable', ticker_text: 'text nullable', ticker_enabled: 'boolean default:true', location_text: "string:100 default:'Jakarta, Indonesia'", footer_about: 'text nullable', footer_address: 'string:255 nullable', footer_phone: 'string:50 nullable', footer_email: 'string:100 nullable', social_facebook: 'string:255 nullable', social_twitter: 'string:255 nullable', social_instagram: 'string:255 nullable', social_youtube: 'string:255 nullable', meta_title: 'string:255 nullable', meta_description: 'text nullable', google_analytics: 'string:50 nullable', timestamps: timestamps }

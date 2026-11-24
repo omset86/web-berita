@@ -15,7 +15,7 @@ class HomeController extends Controller
 {
     public function index()
     {
-        $settings = SiteSetting::get();
+        $settings = SiteSetting::first(); 
         
         $featuredNews = News::published()
             ->featured()

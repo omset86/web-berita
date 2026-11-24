@@ -31,7 +31,7 @@ class NewsletterSubscriber extends Model
         return [
             'id' => 'integer',
             'is_active' => 'boolean',
-            'subscribed_at' => 'timestamp',
+            'subscribed_at' => 'datetime',
         ];
     }
 }

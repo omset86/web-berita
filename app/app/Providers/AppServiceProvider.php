@@ -24,7 +24,7 @@ class AppServiceProvider extends ServiceProvider
     public function boot(): void
     {
         // Bagikan settings dan categories ke semua view
-    View::share('settings', SiteSetting::get());
+    View::share('settings', SiteSetting::first());
     View::share('categories', Category::where('is_active', true)->orderBy('sort_order')->get());
     }
 

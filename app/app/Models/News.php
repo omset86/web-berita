@@ -51,7 +51,7 @@ class News extends Model
             'author_id' => 'integer',
             'is_featured' => 'boolean',
             'is_published' => 'boolean',
-            'published_at' => 'timestamp',
+            'published_at' => 'datetime',
             'view_count' => 'integer',
             'likes_count' => 'integer',
             'dislikes_count' => 'integer',
@@ -59,6 +59,26 @@ class News extends Model
         ];
     }
 
+     public function scopePublished($query)
+    {
+        return $query->where('is_published', true)
+                     ->where('published_at', '<=', now());
+    }
+
+    public function scopeFeatured($query)
+    {
+        return $query->where('is_featured', true);
+    }
+
+    public function incrementViewCount()
+    {
+        $this->increment('view_count');
+    }
+
+    public function getRouteKeyName(): string
+    {
+        return 'slug'; // Agar Route Model Binding menggunakan slug, bukan ID
+    }
     public function category(): BelongsTo
     {
         return $this->belongsTo(Category::class);
@@ -78,6 +98,13 @@ class News extends Model
     {
         return $this->hasMany(Comment::class);
     }
+
+    // --- TAMBAHKAN METHOD INI ---
+    public function approvedComments(): HasMany
+    {
+        return $this->hasMany(Comment::class)->where('status', 'approved')->orderBy('created_at', 'desc');
+    }
+    // ----------------------------
 
     public function liveReport(): HasOne
     {
